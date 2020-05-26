@@ -23,7 +23,7 @@ class App extends Component {
     },
     cardsToWin: []
   }
-  //
+  //setup
   distributeCardsAtBeginningOfGame() {
     let deck = this.shuffle(CARDS);
     for (let i = 0; i < deck.length; i++) {
@@ -35,8 +35,13 @@ class App extends Component {
     }
 
     this.setState(this.state);
-    this.pickCards();
   }
+  componentWillMount() {
+    console.log('mounted');
+    this.distributeCardsAtBeginningOfGame();
+  }
+
+  //helper
   shuffle(cards) {
     let currIdx = cards.length, temporaryValue, randomIdx;
 
@@ -51,102 +56,14 @@ class App extends Component {
 
     return cards;
   }
-  componentWillMount() {
-    console.log('mounted');
-    this.distributeCardsAtBeginningOfGame();
-  }
-  pickCards() {
-    let _self = this;
-    let computerCard = this.state.computer.cards.shift();
-    let youCard = this.state.you.cards.shift();
-    this.state.computer.cardPlayed = computerCard;
-    this.state.you.cardPlayed = youCard;
-    this.setState(this.state);
-    setTimeout(function () {
-      _self.compareValues();
-    }, 1000);
-  }
-  compareValues() {
-    let computerCardValue = this.state.computer.cardPlayed.slice(1);
-    let youCardValue = this.state.you.cardPlayed.slice(1);
-    let computerCard = this.state.computer.cardPlayed;
-    let youCard = this.state.you.cardPlayed;
-    if (computerCardValue == youCardValue) {
-      //draw
-      console.log('draw');
-      this.state.cardsToWin.push(computerCard);
-      this.state.cardsToWin.push(youCard);
-    } else if (computerCardValue === 'A') {
-      this.state.computer.cards.push(computerCard);
-      this.state.computer.cards.push(youCard);
-      this.checkPreviousDraw('computer');
-    } else if (youCardValue === 'A') {
-      this.state.you.cards.push(computerCard);
-      this.state.you.cards.push(youCard);
-      this.checkPreviousDraw('you');
-    } else if (computerCardValue === 'K') {
-      this.state.computer.cards.push(computerCard);
-      this.state.computer.cards.push(youCard);
-      this.checkPreviousDraw('computer');
-    } else if (youCardValue === 'K') {
-      this.state.you.cards.push(computerCard);
-      this.state.you.cards.push(youCard);
-      this.checkPreviousDraw('you');
-    } else if (computerCardValue === 'Q') {
-      this.state.computer.cards.push(computerCard);
-      this.state.computer.cards.push(youCard);
-      this.checkPreviousDraw('computer');
-    } else if (youCardValue === 'Q') {
-      this.state.you.cards.push(computerCard);
-      this.state.you.cards.push(youCard);
-      this.checkPreviousDraw('you');
-    } else if (computerCardValue === 'J') {
-      this.state.computer.cards.push(computerCard);
-      this.state.computer.cards.push(youCard);
-      this.checkPreviousDraw('computer');
-    } else if (youCardValue === 'J') {
-      this.state.you.cards.push(computerCard);
-      this.state.you.cards.push(youCard);
-      this.checkPreviousDraw('you');
-    } else {
-      //both players have numbers
-      let numberComputer = parseInt(computerCardValue);
-      let numberYou = parseInt(youCardValue);
-      if (numberComputer > numberYou) {
-        this.state.computer.cards.push(computerCard);
-        this.state.computer.cards.push(youCard);
-        this.checkPreviousDraw('computer');
-      } else if (numberYou > numberComputer) {
-        this.state.you.cards.push(computerCard);
-        this.state.you.cards.push(youCard);
-        this.checkPreviousDraw('you');
-      }
-    }
 
-    this.setState(this.state);
-    this.checkNumberOfCards();
 
-    this.pickCards();
-  }
-  checkPreviousDraw(player) {
-    let arrayCards = this.state.cardsToWin;
-    if (player === 'computer' && arrayCards.length > 0) {
-      for (let i = 0; i < arrayCards.length; i++) {
-        this.state.computer.cards.push(arrayCards[i]);
-      }
 
-    } else if (player === 'you' && arrayCards.length > 0) {
-      for (let i = 0; i < arrayCards.length; i++) {
-        this.state.you.cards.push(arrayCards[i]);
-      }
-    }
-    this.state.cardsToWin = [];
-    this.setState(this.state);
-  }
+
   checkNumberOfCards() {
     let totalNumberOfCards = this.state.computer.cards.length + this.state.you.cards.length + this.state.cardsToWin.length;
     if (totalNumberOfCards !== 52) {
-      console.error('NOT THE GOOD NUMBER OF CARDS:', totalNumberOfCards);
+      console.error('total num of cards is wrong: ', totalNumberOfCards);
     } else if (this.state.computer.cards.length === 0) {
       alert('You WON!');
       this.state.you.wins += 1;
